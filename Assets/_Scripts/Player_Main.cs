@@ -1,32 +1,35 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class Player_Main : MonoBehaviour
 {
 
-    [SerializeField] PlayerInput inputSys; //InputSystem Object
+	[SerializeField] InputSystem_Actions inputSys; //InputSystem Object
 
-    Rigidbody2D rb = null; //物理演算
-    InputAction moveKey, jumpKey;
-    float moveKeyFloat;
-    bool jumpKeyBool;
+	Rigidbody2D rb = null; //物理演算
+	float moveKeyFloat;
+	bool jumpKeyBool;
 
+	private void Awake()
+	{
+		inputSys = new InputSystem_Actions();
+	}
+	private void OnEnable()
+	{
+		inputSys.Enable();
+	}
+	private void OnDisable()
+	{
+		inputSys.Disable();
+	}
 
+	void Start()
+	{
+		rb = GetComponent<Rigidbody2D>();
 
+	}
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        rb = GetComponent<Rigidbody2D>();
-
-        //キー入力の取得
-        var actionMap = inputSys.currentActionMap;
-        moveKey = actionMap["Move"]; //1D
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	void Update()
+	{
+		moveKeyFloat = inputSys.Player.Move.ReadValue<Vector2>().x;
+	}
 }
