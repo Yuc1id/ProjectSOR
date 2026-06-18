@@ -2,20 +2,33 @@ using UnityEngine;
 
 public class Player_Main : MonoBehaviour
 {
+	//Constant
+	[SerializeField] float moveSpeed = 10;
+    [SerializeField] AnimationCurve walkCurve; //移動速度表現
 
-	[SerializeField] InputSystem_Actions inputSys; //InputSystem Object
+    //Objects
+    private InputSystem_Actions inputSys; //InputSystem Object
+	private Rigidbody2D rb = null; //物理演算
 
-	Rigidbody2D rb = null; //物理演算
+	//Input
 	float moveKeyFloat;
 	bool jumpKeyBool;
 
-	private void Awake()
+	//Script Variable
+    float beforeWalkSpeed = 0f; //直前の歩行の速度
+    float walkTime; //AnimationCurve用
+
+    //
+    private Vector2 GetSpeed_Walk(float hKey)
 	{
-		inputSys = new InputSystem_Actions();
+		return new Vector2(hKey * moveSpeed, 0);
 	}
+
+	//
 	private void OnEnable()
 	{
-		inputSys.Enable();
+        inputSys = new InputSystem_Actions();
+        inputSys.Enable();
 	}
 	private void OnDisable()
 	{
@@ -24,12 +37,17 @@ public class Player_Main : MonoBehaviour
 
 	void Start()
 	{
+		//Load Object
 		rb = GetComponent<Rigidbody2D>();
-
 	}
 
-	void Update()
+	void FixedUpdate()
 	{
+		//Load Input
 		moveKeyFloat = inputSys.Player.Move.ReadValue<Vector2>().x;
-	}
+		//Debug.Log(moveKeyFloat);
+
+		//Move
+        rb.linearVelocity = new Vector2(moveKeyFloat * 10, 0);
+    }
 }
