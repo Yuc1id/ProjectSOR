@@ -201,6 +201,8 @@ public class Player_Main : MonoBehaviour
 		jumpKeyBool = inputSys.Player.Jump.IsPressed();
 		//Debug.Log(walkKeyFloat);
 
+		isGround = checkGround.IsGround();
+
 		//Move
 		rb.linearVelocity = GetSpeed_Walk(walkKeyFloat) + GetSpeed_Jump(jumpKeyBool);
 	}
