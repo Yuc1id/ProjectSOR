@@ -1,22 +1,22 @@
+using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Player_Main : MonoBehaviour
 {
 	//Constant
-	[SerializeField] Player_CheckGround checkGround, checkHead;
+	[SerializeField] Player_CheckGround checkGround, checkHead, checkWallFront, checkWallBack; //接地判定用オブジェクト
 	[SerializeField] float walkSpeed = 10;
 	[SerializeField] AnimationCurve walkCurve; //移動速度表現
 	[SerializeField] float gravity; //下向き＋
 	[SerializeField] float jumpSpeed;
 	[SerializeField] AnimationCurve jumpCurve; //ジャンプ速度表現
 	[SerializeField] float jumpLimitTime; //ジャンプ上限時間
+	[SerializeField] float jumpMaxFallSpeed;
 	[SerializeField] AnimationCurve objJumpCurve; //オブジェクトジャンプ表現
 	//Objects
 	InputSystem_Actions inputSys; //InputSystem Object
 	Rigidbody2D rb = null; //physics
-
-	//Player_CheckGround checkGround, checkHead;
-
 
 	//Input
 	float walkKeyFloat;
@@ -25,6 +25,8 @@ public class Player_Main : MonoBehaviour
 	//Script Variable
 	bool isGround = false; //CheckGround under
 	bool isHead = false; //CheckGround above
+	bool isWallFront = false; //CheckGround front
+	bool isWallBack = false; //CheckGround back
 
 	float beforeWalkSpeed = 0f;
 	float walkTime; //for AnimationCurve
@@ -53,12 +55,12 @@ public class Player_Main : MonoBehaviour
 		float calcSpeed = beforeWalkSpeed;
 
 		//(hKey = -1, 0, 1)
-		int bWS_sign = (int)(beforeWalkSpeed / Mathf.Abs(beforeWalkSpeed)); //-1, -2147483648(=-2**31=0), 1
-		if (beforeWalkSpeed == 0) bWS_sign = 0;
+		float bws_sign = Mathf.Sign(beforeWalkSpeed);
+		float hKey_sign = Mathf.Sign(hKey);
 
 		if (hKey != 0) //キーが押された
 		{
-			transform.localScale = new Vector3(hKey, 1, 1);
+			transform.localScale = new Vector3(hKey_sign, 1, 1);
 			//速度計算
 			if (hKey * beforeWalkSpeed < 0) //ターン
 			{
@@ -74,16 +76,15 @@ public class Player_Main : MonoBehaviour
 		}
 		else
 		{
-			calcSpeed -= bWS_sign * walkSpeed / stopDecelRate; //減速
+			calcSpeed -= bws_sign * walkSpeed / stopDecelRate; //減速
 			walkTime = 0.0f; //AnimationCurveを無視
-			if (bWS_sign * calcSpeed < 0) calcSpeed = 0.0f; //減速終わり
+			if (bws_sign * calcSpeed < 0) calcSpeed = 0.0f; //減速終わり
 		}
-		//if (isWallAlt) //壁にめり込もうとする向き
-		//{
-		//	calcSpeed = 0f;
-		//	walkTime = 0.0f;
-		//}
-
+		if (isWallFront) //壁にめり込もうとする向き
+		{
+			calcSpeed = 0f;
+			walkTime = 0.0f;
+		}
 
 		//最高速度(walkSpeed)に対する現在の速度(calcSpeed)の割合　アニメーション用
 		animWalkSpeed = Mathf.Abs(calcSpeed / walkSpeed);
@@ -95,10 +96,6 @@ public class Player_Main : MonoBehaviour
 
 	Vector2 GetSpeed_Jump(bool jKey)
 	{
-		//return Vector2.zero;
-
-		const float maxFallSpeed = -10f;
-
 		bool canTime = jumpLimitTime > jumpTime; //ジャンプが時間切れでないか
 		float calcSpeed = beforeJumpSpeed;
 
@@ -166,7 +163,7 @@ public class Player_Main : MonoBehaviour
 		else //落下続行　AnimationCurve無視
 		{
 			calcSpeed -= gravity;
-			if (calcSpeed < maxFallSpeed) calcSpeed = maxFallSpeed; //下限設定
+			if (calcSpeed < jumpMaxFallSpeed) calcSpeed = jumpMaxFallSpeed; //下限設定
 		}
 		//現フレームのステータスを保存
 		beforeJumpSpeed = calcSpeed;
@@ -202,6 +199,9 @@ public class Player_Main : MonoBehaviour
 		//Debug.Log(walkKeyFloat);
 
 		isGround = checkGround.IsGround();
+		isHead = checkHead.IsGround();
+		isWallFront = checkWallFront.IsGround();
+		isWallBack = checkWallBack.IsGround();
 
 		//Move
 		rb.linearVelocity = GetSpeed_Walk(walkKeyFloat) + GetSpeed_Jump(jumpKeyBool);
