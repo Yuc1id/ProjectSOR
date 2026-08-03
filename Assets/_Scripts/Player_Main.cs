@@ -1,6 +1,7 @@
 using System;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class Player_Main : MonoBehaviour
 {
@@ -147,7 +148,7 @@ public class Player_Main : MonoBehaviour
 				calcSpeed -= gravity; //慣性を残す
 			}
 		}
-		else if (isGround) //地上
+		else if (isGround && !isHead) //地上
 		{
 			if (jKey) //上昇開始　AnimationCurve適用
 			{
@@ -187,14 +188,12 @@ public class Player_Main : MonoBehaviour
 	{
 		//Load Object
 		rb = GetComponent<Rigidbody2D>();
-        //checkGround = transform.Find("Ground").gameObject.GetComponent<Player_CheckGround>();
-        //checkHead = transform.Find("Head").gameObject.GetComponent<Player_CheckGround>();
-    }
+	}
 
 	void FixedUpdate()
 	{
 		//Load Input
-		walkKeyFloat = inputSys.Player.Move.ReadValue<Vector2>().x;
+		walkKeyFloat = inputSys.Player.MoveHorizontal.ReadValue<float>();
 		jumpKeyBool = inputSys.Player.Jump.IsPressed();
 		//Debug.Log(walkKeyFloat);
 
