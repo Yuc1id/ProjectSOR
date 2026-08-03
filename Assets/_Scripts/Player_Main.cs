@@ -3,7 +3,7 @@ using UnityEngine;
 public class Player_Main : MonoBehaviour
 {
 	//Constant
-	[SerializeField] Player_CheckGround checkGround, checkHead;
+	[SerializeField] Player_CheckGround checkGround, checkHead, checkWallFront, checkWallBack; //接地判定用オブジェクト
 	[SerializeField] float walkSpeed = 10;
 	[SerializeField] AnimationCurve walkCurve; //移動速度表現
 	[SerializeField] float gravity; //下向き＋
@@ -15,9 +15,6 @@ public class Player_Main : MonoBehaviour
 	InputSystem_Actions inputSys; //InputSystem Object
 	Rigidbody2D rb = null; //physics
 
-	//Player_CheckGround checkGround, checkHead;
-
-
 	//Input
 	float walkKeyFloat;
 	bool jumpKeyBool;
@@ -25,6 +22,8 @@ public class Player_Main : MonoBehaviour
 	//Script Variable
 	bool isGround = false; //CheckGround under
 	bool isHead = false; //CheckGround above
+	bool isWallFront = false; //CheckGround front
+	bool isWallBack = false; //CheckGround back
 
 	float beforeWalkSpeed = 0f;
 	float walkTime; //for AnimationCurve
@@ -78,12 +77,11 @@ public class Player_Main : MonoBehaviour
 			walkTime = 0.0f; //AnimationCurveを無視
 			if (bWS_sign * calcSpeed < 0) calcSpeed = 0.0f; //減速終わり
 		}
-		//if (isWallAlt) //壁にめり込もうとする向き
-		//{
-		//	calcSpeed = 0f;
-		//	walkTime = 0.0f;
-		//}
-
+		if (isWallFront) //壁にめり込もうとする向き
+		{
+			calcSpeed = 0f;
+			walkTime = 0.0f;
+		}
 
 		//最高速度(walkSpeed)に対する現在の速度(calcSpeed)の割合　アニメーション用
 		animWalkSpeed = Mathf.Abs(calcSpeed / walkSpeed);
@@ -202,6 +200,9 @@ public class Player_Main : MonoBehaviour
 		//Debug.Log(walkKeyFloat);
 
 		isGround = checkGround.IsGround();
+		isHead = checkHead.IsGround();
+		isWallFront = checkWallFront.IsGround();
+		isWallBack = checkWallBack.IsGround();
 
 		//Move
 		rb.linearVelocity = GetSpeed_Walk(walkKeyFloat) + GetSpeed_Jump(jumpKeyBool);
