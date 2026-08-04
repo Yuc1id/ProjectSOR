@@ -1,13 +1,11 @@
-using System;
-using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Animations;
 
 public class Player_Main : MonoBehaviour
 {
 	//Constant
 	[SerializeField] Player_CheckGround checkGround, checkHead, checkWallFront, checkWallBack; //接地判定用オブジェクト
-	[SerializeField] float walkSpeed = 10;
+	[SerializeField] Player_CheckGround checkWater; //水中判定用オブジェクト
+	[SerializeField] float walkSpeed;
 	[SerializeField] AnimationCurve walkCurve; //移動速度表現
 	[SerializeField] float gravity; //下向き＋
 	[SerializeField] float jumpSpeed;
@@ -15,6 +13,10 @@ public class Player_Main : MonoBehaviour
 	[SerializeField] float jumpLimitTime; //ジャンプ上限時間
 	[SerializeField] float jumpMaxFallSpeed;
 	[SerializeField] AnimationCurve objJumpCurve; //オブジェクトジャンプ表現
+	[SerializeField] float swimSpeed;
+	[SerializeField] float swimAcceleration;
+	[SerializeField] float swimDeceleration; //ニュートラル時の減速率
+
 	//Objects
 	InputSystem_Actions inputSys; //InputSystem Object
 	Rigidbody2D rb = null; //physics
@@ -22,12 +24,16 @@ public class Player_Main : MonoBehaviour
 	//Input
 	float walkKeyFloat;
 	bool jumpKeyBool;
+	Vector2 swimKeyVector2;
 
 	//Script Variable
 	bool isGround = false; //CheckGround under
 	bool isHead = false; //CheckGround above
 	bool isWallFront = false; //CheckGround front
 	bool isWallBack = false; //CheckGround back
+	bool isWater = false; //CheckGround water
+
+	Vector2 beforeSpeed = Vector2.zero; //前フレームの速度
 
 	float beforeWalkSpeed = 0f;
 	float walkTime; //for AnimationCurve
@@ -108,23 +114,6 @@ public class Player_Main : MonoBehaviour
 			{
 				calcSpeed = objectJumpHeight * objJumpCurve.Evaluate(jumpTime);
 				jumpTime += Time.deltaTime;
-				/* グラフ計算詳細
-				各点での傾きなどから速度変化のグラフを手動で書く
-				x秒で目的の高さまで上げる
-
-				f(0) = 0 => a * 0**2 + b * 0 + c = 0 => c = 0
-				f(x) = p => a * x**2 + b * x = p => a * x + b = p * (1/x)
-				f'(x) = 0 => 2a * x + b = 0
-				a * x = -p * (1/x) => a = -p * (1/x)**2, b = -2 * x * a = 2p * (1/x)
-
-				a = -(1/x**2)p, b = (2/x)p
-				f(t) = -(1/x**2)p * t**2 + (2/x)p * t
-				f'(t) = -(2/x**2)p * t + (2/x)p
-				f'(0) = (2/x)p, f'(x) = 0
-
-				x = 0.5
-				f'(0) = 4p, f'(x) = 0
-				*/
 			}
 			else //落下開始　AnimationCurve無視
 			{
@@ -164,7 +153,7 @@ public class Player_Main : MonoBehaviour
 		else //落下続行　AnimationCurve無視
 		{
 			calcSpeed -= gravity;
-			if (calcSpeed < jumpMaxFallSpeed) calcSpeed = jumpMaxFallSpeed; //下限設定
+			calcSpeed = Mathf.Clamp(calcSpeed, jumpMaxFallSpeed, float.MaxValue); //下限設定
 		}
 		//現フレームのステータスを保存
 		beforeJumpSpeed = calcSpeed;
@@ -173,7 +162,30 @@ public class Player_Main : MonoBehaviour
 		return new Vector2(0, calcSpeed);
 	}
 
-	//
+	Vector2 GetSpeed_Swim(Vector2 sKey)
+	{
+		Vector2 calcSpeed = beforeSpeed;
+
+		float sKeyH_sign = Mathf.Sign(sKey.x);
+		if (sKey.x != 0) transform.localScale = new Vector3(sKeyH_sign, 1, 1);
+
+		if (sKey != Vector2.zero)
+		{
+			calcSpeed += sKey * swimAcceleration;
+			calcSpeed.x = Mathf.Clamp(calcSpeed.x, -swimSpeed, swimSpeed);
+			calcSpeed.y = Mathf.Clamp(calcSpeed.y, -swimSpeed, swimSpeed);
+		}
+		else
+		{
+			calcSpeed *= swimDeceleration;
+		}
+
+		beforeWalkSpeed = calcSpeed.x;
+		beforeJumpSpeed = calcSpeed.y;
+		return calcSpeed;
+	}
+
+	//InputSystem
 	void OnEnable()
 	{
 		inputSys = new InputSystem_Actions();
@@ -195,14 +207,25 @@ public class Player_Main : MonoBehaviour
 		//Load Input
 		walkKeyFloat = inputSys.Player.MoveHorizontal.ReadValue<float>();
 		jumpKeyBool = inputSys.Player.Jump.IsPressed();
-		//Debug.Log(walkKeyFloat);
+		swimKeyVector2 = inputSys.Player.Move.ReadValue<Vector2>();
 
 		isGround = checkGround.IsGround();
 		isHead = checkHead.IsGround();
 		isWallFront = checkWallFront.IsGround();
 		isWallBack = checkWallBack.IsGround();
+		isWater = checkWater.IsWater();
 
 		//Move
-		rb.linearVelocity = GetSpeed_Walk(walkKeyFloat) + GetSpeed_Jump(jumpKeyBool);
+		if (isWater)
+		{
+			rb.linearVelocity = GetSpeed_Swim(swimKeyVector2);
+		}
+		else
+		{
+			rb.linearVelocity = GetSpeed_Walk(walkKeyFloat) + GetSpeed_Jump(jumpKeyBool);
+		}
+
+		beforeSpeed = rb.linearVelocity;
 	}
+
 }
