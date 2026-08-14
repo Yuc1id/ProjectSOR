@@ -1,21 +1,23 @@
 using UnityEngine;
+using Alchemy.Inspector;
 
 public class Player_Main : MonoBehaviour
 {
 	//Constant
-	[SerializeField] Player_CheckGround checkGround, checkHead, checkWallFront, checkWallBack; //接地判定用オブジェクト
-	[SerializeField] Player_CheckGround checkWater; //水中判定用オブジェクト
-	[SerializeField] float walkSpeed;
-	[SerializeField] AnimationCurve walkCurve; //移動速度表現
-	[SerializeField] float gravity; //下向き＋
-	[SerializeField] float jumpSpeed;
-	[SerializeField] AnimationCurve jumpCurve; //ジャンプ速度表現
-	[SerializeField] float jumpLimitTime; //ジャンプ上限時間
-	[SerializeField] float jumpMaxFallSpeed;
-	[SerializeField] AnimationCurve objJumpCurve; //オブジェクトジャンプ表現
-	[SerializeField] float swimSpeed;
-	[SerializeField] float swimAcceleration;
-	[SerializeField] float swimDeceleration; //ニュートラル時の減速率
+	[FoldoutGroup("CheckGround")][SerializeField] Player_CheckGround checkGround, checkHead, checkWallFront, checkWallBack; //接地判定用オブジェクト
+	[FoldoutGroup("CheckGround")][SerializeField] Player_CheckGround checkWater; //水中判定用オブジェクト
+
+	[TabGroup("Movement", "Walk")][SerializeField] float walkSpeed;
+	[TabGroup("Movement", "Walk")][SerializeField] AnimationCurve walkCurve; //移動速度表現
+	[TabGroup("Movement", "Jump")][SerializeField] float gravity; //下向き＋
+	[TabGroup("Movement", "Jump")][SerializeField] float jumpSpeed;
+	[TabGroup("Movement", "Jump")][SerializeField] AnimationCurve jumpCurve; //ジャンプ速度表現
+	[TabGroup("Movement", "Jump")][SerializeField] float jumpLimitTime; //ジャンプ上限時間
+	[TabGroup("Movement", "Jump")][SerializeField] float jumpMaxFallSpeed;
+	[TabGroup("Movement", "Jump")][SerializeField] AnimationCurve objJumpCurve; //オブジェクトジャンプ表現
+	[TabGroup("Movement", "Swim")][SerializeField] float swimSpeed;
+	[TabGroup("Movement", "Swim")][SerializeField] float swimAcceleration;
+	[TabGroup("Movement", "Swim")][SerializeField] float swimDeceleration; //ニュートラル時の減速率
 
 	//Objects
 	InputSystem_Actions inputSys; //InputSystem Object

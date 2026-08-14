@@ -2,7 +2,7 @@
 - Project name: ProjectSOR
 - Unity version: Unity 6000.4.4f1
 - Active game object:
-  - Name: Player
-  - Tag: Untagged
+  - Name: Main Camera
+  - Tag: MainCamera
   - Layer: Default
 <!-- UNITY CODE ASSIST INSTRUCTIONS END -->
