@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 616965140775782162}
-  - component: {fileID: 7567777540496468811}
-  - component: {fileID: 4554510400230361655}
+  - component: {fileID: 1952257417647795070}
+  - component: {fileID: 4320254351998620406}
   m_Layer: 0
   m_Name: HeavyBlow
-  m_TagString: Untagged
+  m_TagString: Player_Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -33,7 +33,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &7567777540496468811
+--- !u!212 &1952257417647795070
 SpriteRenderer:
   serializedVersion: 2
   m_ObjectHideFlags: 0
@@ -92,7 +92,7 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
---- !u!60 &4554510400230361655
+--- !u!60 &4320254351998620406
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -3351,7 +3351,7 @@ GameObject:
   - component: {fileID: 1142450452}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3576,7 +3576,8 @@ MonoBehaviour:
   swimSpeed: 20
   swimAcceleration: 1
   swimDeceleration: 0.95
-  playerWeapon: {fileID: 0}
+  weapon: {fileID: 1445465956}
+  attackMode: 1
 --- !u!50 &1142450453
 Rigidbody2D:
   serializedVersion: 5
@@ -7600,7 +7601,7 @@ GameObject:
   - component: {fileID: 1445465956}
   m_Layer: 0
   m_Name: Weapon
-  m_TagString: Untagged
+  m_TagString: Player_Weapon
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7633,8 +7634,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84fbd36f8e336194c852bb31b5a2f1e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player_Weapon
-  HeavyBlowObject: {fileID: 1613744602298875044, guid: e01322a93c018db4eb29b0f5b4b02f0b, type: 3}
-  HeavyBlowAttackPower: 5
+  attackMode: 1
+  damage: 1
+  heavyBlowObject: {fileID: 1613744602298875044, guid: e01322a93c018db4eb29b0f5b4b02f0b, type: 3}
+  heavyBlowDuration: 0.1
+  heavyBlowCooldown: 0.3
+  heavyBlowATK: 5
 --- !u!1 &1813000978
 GameObject:
   m_ObjectHideFlags: 0
@@ -8001,7 +8006,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 616965140775782162, guid: e01322a93c018db4eb29b0f5b4b02f0b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 616965140775782162, guid: e01322a93c018db4eb29b0f5b4b02f0b, type: 3}
       propertyPath: m_LocalPosition.y
@@ -8045,7 +8050,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1613744602298875044, guid: e01322a93c018db4eb29b0f5b4b02f0b, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

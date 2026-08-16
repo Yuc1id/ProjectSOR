@@ -19,7 +19,7 @@ public class Player_Main : MonoBehaviour
 	[TabGroup("Movement", "Swim")][SerializeField] float swimAcceleration;
 	[TabGroup("Movement", "Swim")][SerializeField] float swimDeceleration; //ニュートラル時の減速率
 
-	[SerializeField] Player_Weapon playerWeapon; //武器オブジェクト
+	[SerializeField] Player_Weapon weapon; //武器オブジェクト
 
 	//Objects
 	InputSystem_Actions inputSys; //InputSystem Object
@@ -29,6 +29,7 @@ public class Player_Main : MonoBehaviour
 	float walkKeyFloat;
 	bool jumpKeyBool;
 	Vector2 swimKeyVector2;
+	bool attackKeyBool;
 
 	//Script Variable
 	bool isGround = false; //CheckGround under
@@ -52,6 +53,8 @@ public class Player_Main : MonoBehaviour
 	float animWalkSpeed = 0.0f;
 	bool animIsJump = false;
 	bool animIsWallJump = false;
+
+	public int attackMode = 1; //攻撃モード
 
 	/// <summary>
 	///	歩行速度の計算（-speed以上speed以下）
@@ -212,6 +215,7 @@ public class Player_Main : MonoBehaviour
 		walkKeyFloat = inputSys.Player.MoveHorizontal.ReadValue<float>();
 		jumpKeyBool = inputSys.Player.Jump.IsPressed();
 		swimKeyVector2 = inputSys.Player.Move.ReadValue<Vector2>();
+		attackKeyBool = inputSys.Player.Attack.IsPressed();
 
 		isGround = checkGround.IsGround();
 		isHead = checkHead.IsGround();
@@ -227,6 +231,12 @@ public class Player_Main : MonoBehaviour
 		else
 		{
 			rb.linearVelocity = GetSpeed_Walk(walkKeyFloat) + GetSpeed_Jump(jumpKeyBool);
+		}
+
+		//Attack
+		if (attackKeyBool)
+		{
+			if (attackMode == 1) weapon.Attack(1);
 		}
 
 		beforeSpeed = rb.linearVelocity;

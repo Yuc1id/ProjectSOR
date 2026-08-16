@@ -1,17 +1,55 @@
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System;
 
 public class Player_Weapon : MonoBehaviour
 {
-	[SerializeField] GameObject HeavyBlowObject;
-	[SerializeField] float HeavyBlowAttackPower;
+	public int attackMode = 1;
+	public float damage = 0f;
 
-	// bool isHeavyBlow = false;
+	[SerializeField] GameObject heavyBlowObject;
+	[SerializeField] float heavyBlowDuration;
+	[SerializeField] float heavyBlowCooldown;
+	[SerializeField] float heavyBlowATK;
+
+	bool canHeavyBlow = false;
+	int existingHeavyBlowCount = 0;
 
 	//Attacks
 
-	//シャコ
-	public void HeavyBlow()
+	//#1 シャコ
+	async UniTask HeavyBlowCooldown()
+	{
+		canHeavyBlow = true;
+		await UniTask.Delay(TimeSpan.FromSeconds(heavyBlowCooldown));
+		canHeavyBlow = false;
+	}
+	async UniTask HeavyBlow()
     {
-		// HeavyBlowの処理をここに記述
+		if (!canHeavyBlow)
+		{
+			_ = HeavyBlowCooldown();
+
+			GameObject blowEffect = Instantiate(heavyBlowObject, transform);
+			existingHeavyBlowCount++;
+			damage = heavyBlowATK;
+
+			await UniTask.Delay(TimeSpan.FromSeconds(heavyBlowDuration));
+			Destroy(blowEffect);
+			existingHeavyBlowCount--;
+
+			if (existingHeavyBlowCount <= 0) damage = 0f;
+		}
+	}
+
+	public UniTask Attack(int mode)
+	{
+		switch (mode)
+		{
+			case 1:
+				return HeavyBlow();
+			default:
+				throw new ArgumentException("Invalid attack mode");
+		}
 	}
 }
