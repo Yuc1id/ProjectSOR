@@ -19,6 +19,8 @@ public class Player_Main : MonoBehaviour
 	[TabGroup("Movement", "Swim")][SerializeField] float swimAcceleration;
 	[TabGroup("Movement", "Swim")][SerializeField] float swimDeceleration; //ニュートラル時の減速率
 
+	[SerializeField] Player_Weapon playerWeapon; //武器オブジェクト
+
 	//Objects
 	InputSystem_Actions inputSys; //InputSystem Object
 	Rigidbody2D rb = null; //physics
