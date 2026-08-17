@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Map
   - Map_Water
+  - Player_Weapon
   layers:
   - Default
   - TransparentFX
