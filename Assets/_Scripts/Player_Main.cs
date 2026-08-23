@@ -1,4 +1,5 @@
 using UnityEngine;
+
 using Alchemy.Inspector;
 
 public class Player_Main : MonoBehaviour
@@ -24,6 +25,7 @@ public class Player_Main : MonoBehaviour
 	//Objects
 	InputSystem_Actions inputSys; //InputSystem Object
 	Rigidbody2D rb = null; //physics
+	Animator anim = null; //Animation
 
 	//Input
 	float walkKeyFloat;
@@ -176,6 +178,9 @@ public class Player_Main : MonoBehaviour
 		float sKeyH_sign = Mathf.Sign(sKey.x);
 		if (sKey.x != 0) transform.localScale = new Vector3(sKeyH_sign, 1, 1);
 
+		if (isWallFront) calcSpeed.x = 0f;
+		if (isGround || isHead) calcSpeed.y = 0f;
+
 		if (sKey != Vector2.zero)
 		{
 			calcSpeed += sKey * swimAcceleration;
@@ -207,6 +212,7 @@ public class Player_Main : MonoBehaviour
 	{
 		//Load Object
 		rb = GetComponent<Rigidbody2D>();
+		anim = GetComponent<Animator>();
 	}
 
 	void FixedUpdate()
@@ -240,6 +246,9 @@ public class Player_Main : MonoBehaviour
 		}
 
 		beforeSpeed = rb.linearVelocity;
+
+		//Animation
+		anim.SetFloat("WalkSpeed", animWalkSpeed, 0.1f, Time.deltaTime);
 	}
 
 }
