@@ -1,11 +1,14 @@
 using UnityEngine;
-using Cysharp.Threading.Tasks;
 using System;
+
+using Cysharp.Threading.Tasks;
+
+using ProjectSOR;
 
 public class Player_Weapon : MonoBehaviour
 {
 	public int attackMode = 1;
-	public float damage = 0f;
+	private float damage = 0f;
 
 	[SerializeField] GameObject heavyBlowObject;
 	[SerializeField] float heavyBlowDuration;
@@ -25,7 +28,7 @@ public class Player_Weapon : MonoBehaviour
 		canHeavyBlow = false;
 	}
 	async UniTask HeavyBlow()
-    {
+	{
 		if (!canHeavyBlow)
 		{
 			_ = HeavyBlowCooldown();
@@ -50,6 +53,21 @@ public class Player_Weapon : MonoBehaviour
 				return HeavyBlow();
 			default:
 				throw new ArgumentException("Invalid attack mode");
+		}
+	}
+
+	readonly string enemyTag = "Enemy";
+	void OnTriggerEnter2D(Collider2D collision)
+	{
+		if (collision == null) return;
+
+		if (collision.CompareTag(enemyTag))
+		{
+			var enemy = collision.GetComponent<Enemy_Base>();
+			if (enemy != null)
+			{
+				enemy.ReceiveDamage(damage);
+			}
 		}
 	}
 }
