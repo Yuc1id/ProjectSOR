@@ -6,7 +6,7 @@ public class Enemy_Dummy : Enemy_Base
 {
 	[SerializeField] bool resetHPOnUpdate = true;
 
-	void Update()
+	protected override void Update()
 	{
 		if (resetHPOnUpdate && hp != maxHP)
 		{

@@ -28,7 +28,7 @@ public class Player_Weapon : MonoBehaviour
 		canHeavyBlow = false;
 	}
 	async UniTask HeavyBlow()
-    {
+	{
 		if (!canHeavyBlow)
 		{
 			_ = HeavyBlowCooldown();

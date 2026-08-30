@@ -302813,7 +302813,7 @@ CompositeCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_GeometryType: 0
+  m_GeometryType: 1
   m_GenerationType: 0
   m_EdgeRadius: 0
   m_ColliderPaths:
@@ -304362,7 +304362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 662a65701fdf0ce4aaca0317fb7e064e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Dummy
-  maxHP: 10000
+  maxHP: 25
   resetHPOnUpdate: 0
 --- !u!61 &1185158024
 BoxCollider2D:

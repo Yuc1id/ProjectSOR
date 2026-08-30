@@ -15,10 +15,22 @@ namespace ProjectSOR
 			hp -= damage;
 			Debug.Log($"{gameObject.name} received {damage} damage. Current HP: {hp}");
 		}
+		protected virtual void Defeat()
+		{
+			Debug.Log($"{gameObject.name} has died.");
+			Destroy(gameObject);
+		}
 
 		protected virtual void Start()
 		{
 			hp = maxHP;
+		}
+		protected virtual void Update()
+		{
+			if (hp <= 0)
+			{
+				Defeat();
+			}
 		}
 	}
 }
