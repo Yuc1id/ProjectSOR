@@ -51,6 +51,9 @@ public class Player_Main : MonoBehaviour
 	bool isJump = false; //プレイヤーがジャンプ（上昇）中か
 	bool isObjectJump = false; //プレイヤーがオブジェクト（ばねなど）によるジャンプ（上昇）中か
 	float objectJumpHeight = 0f; //オブジェクトジャンプの高度
+
+	Vector2 additionalSpeed = Vector2.zero;
+
 	//Animation Variable
 	float animWalkSpeed = 0.0f;
 	bool animIsJump = false;
@@ -113,7 +116,10 @@ public class Player_Main : MonoBehaviour
 	Vector2 GetSpeed_Jump(bool jKey)
 	{
 		bool canTime = jumpLimitTime > jumpTime; //ジャンプが時間切れでないか
+		int additionalAirVSpeedDecelRate = 10;
+
 		float calcSpeed = beforeJumpSpeed;
+
 
 		if (isHead) calcSpeed = 0.0f;
 
@@ -133,7 +139,12 @@ public class Player_Main : MonoBehaviour
 		}
 		else if (isJump) //ジャンプ上昇中
 		{
-
+			///速度超過で緩やかに減速
+			///if
+			///else if (jkey---
+			///
+			///owari
+			
 			if (jKey && canTime && !isHead) //上昇続行　AnimationCurve適用
 			{
 				jumpTime += Time.deltaTime;
@@ -195,6 +206,12 @@ public class Player_Main : MonoBehaviour
 		beforeWalkSpeed = calcSpeed.x;
 		beforeJumpSpeed = calcSpeed.y;
 		return calcSpeed;
+	}
+
+	public void AddPlayerSpeed(Vector2 addSpeed)
+	{
+		additionalSpeed = addSpeed;
+
 	}
 
 	//InputSystem
