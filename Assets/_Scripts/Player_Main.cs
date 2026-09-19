@@ -78,12 +78,6 @@ public class Player_Main : MonoBehaviour
 		const int excessHSpeedDecelRate = 10;
 
 		float calcSpeed = beforeWalkSpeed;
-		//add external force
-		if (externalForceSpeed.x != 0f)
-		{
-			calcSpeed += externalForceSpeed.x;
-			externalForceSpeed.x = 0f;
-		}
 
 		//(hKey = -1, 0, 1)
 		float bws_sign = Mathf.Sign(beforeWalkSpeed);
@@ -130,6 +124,13 @@ public class Player_Main : MonoBehaviour
 			walkTime = 0.0f;
 		}
 
+		//add external force
+		if (externalForceSpeed.x != 0f)
+		{
+			calcSpeed = externalForceSpeed.x;
+			externalForceSpeed.x = 0f;
+		}
+
 		//最高速度(walkSpeed)に対する現在の速度(calcSpeed)の割合　アニメーション用
 		animWalkSpeed = Mathf.Abs(calcSpeed / walkSpeed);
 		//現フレームのステータスを保存
@@ -144,7 +145,6 @@ public class Player_Main : MonoBehaviour
 		const int additionalAirVSpeedDecelRate = 10;
 
 		float calcSpeed = beforeJumpSpeed;
-
 
 		if (isHead) calcSpeed = 0.0f;
 
@@ -194,6 +194,14 @@ public class Player_Main : MonoBehaviour
 			calcSpeed -= gravity;
 			calcSpeed = Mathf.Clamp(calcSpeed, jumpMaxFallSpeed, float.MaxValue); //下限設定
 		}
+
+		//add external force
+		if (externalForceSpeed.y != 0f)
+		{
+			calcSpeed = externalForceSpeed.y;
+			externalForceSpeed.y = 0f;
+		}
+
 		//現フレームのステータスを保存
 		beforeJumpSpeed = calcSpeed;
 
@@ -309,6 +317,10 @@ public class Player_Main : MonoBehaviour
 				if (vectorPlate.isField)
 				{
 					externalFieldSpeed = vectorPlate.addSpeed;
+				}
+				else
+				{
+					externalForceSpeed = vectorPlate.addSpeed;
 				}
 			}
 		}
