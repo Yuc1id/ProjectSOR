@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 using Alchemy.Inspector;
@@ -235,12 +237,10 @@ public class Player_Main : MonoBehaviour
 		}
 	}
 
-	public void AddPlayerSpeed(Vector2 addSpeed)
+	public void SetForceSpeedToPlayer(Vector2 addSpeed)
 	{
 		externalForceSpeed = addSpeed;
-
 	}
-
 	//InputSystem
 	void OnEnable()
 	{
@@ -283,6 +283,9 @@ public class Player_Main : MonoBehaviour
 			rb.linearVelocity = GetSpeed_Walk(walkKeyFloat) + GetSpeed_Jump(jumpKeyBool);
 		}
 
+		rb.linearVelocity += externalFieldSpeed;
+		externalFieldSpeed = Vector2.zero;
+
 		//Attack
 		if (attackKeyBool)
 		{
@@ -295,4 +298,19 @@ public class Player_Main : MonoBehaviour
 		anim.SetFloat("WalkSpeed", animWalkSpeed, 0.1f, Time.deltaTime);
 	}
 
+	string objectTag = "Object";
+	void OnTriggerStay2D(Collider2D collision)
+	{
+		if (collision.gameObject.CompareTag(objectTag))
+		{
+			var vectorPlate = collision.GetComponent<Object_VectorPlate>();
+			if (vectorPlate != null)
+			{
+				if (vectorPlate.isField)
+				{
+					externalFieldSpeed = vectorPlate.addSpeed;
+				}
+			}
+		}
+	}
 }
