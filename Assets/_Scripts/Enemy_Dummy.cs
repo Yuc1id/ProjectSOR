@@ -13,5 +13,9 @@ public class Enemy_Dummy : Enemy_Base
 			hp = maxHP;
 			Debug.Log($"{gameObject.name} HP reset to maxHP: {maxHP}");
 		}
+		else if (hp <= 0)
+		{
+			Defeat();
+		}
 	}
 }
