@@ -52,7 +52,10 @@ public class Player_Main : MonoBehaviour
 	bool isObjectJump = false; //プレイヤーがオブジェクト（ばねなど）によるジャンプ（上昇）中か
 	float objectJumpHeight = 0f; //オブジェクトジャンプの高度
 
-	Vector2 additionalSpeed = Vector2.zero;
+	bool isSwim = false;
+
+	Vector2 externalForceSpeed = Vector2.zero;
+	Vector2 externalFieldSpeed = Vector2.zero;
 
 	//Animation Variable
 	float animWalkSpeed = 0.0f;
@@ -70,22 +73,42 @@ public class Player_Main : MonoBehaviour
 	{
 		const int turnDecelRate = 5; //ターン（キーを切り替えた）時の減速最大フレーム数
 		const int stopDecelRate = 15; //停止（キーを離した）時の減速最大フレーム数
+		const int excessHSpeedDecelRate = 10;
 
 		float calcSpeed = beforeWalkSpeed;
+		//add external force
+		if (externalForceSpeed.x != 0f)
+		{
+			calcSpeed += externalForceSpeed.x;
+			externalForceSpeed.x = 0f;
+		}
 
 		//(hKey = -1, 0, 1)
 		float bws_sign = Mathf.Sign(beforeWalkSpeed);
 		float hKey_sign = Mathf.Sign(hKey);
 
-		if (hKey != 0) //キーが押された
+
+		if (hKey != 0) //key pressed
 		{
 			transform.localScale = new Vector3(hKey_sign, 1, 1);
-			//速度計算
-			if (hKey * beforeWalkSpeed < 0) //ターン
+			//calculation
+			if (hKey * beforeWalkSpeed < 0) //turn
 			{
 				calcSpeed += hKey * walkSpeed / turnDecelRate; //減速
 				walkTime = 0.0f; //AnimationCurveを無視
 				if (hKey * calcSpeed > 0) calcSpeed = 0.0f; //ターン終わり
+			}
+			else if (calcSpeed > walkSpeed)
+			{
+				calcSpeed -= walkSpeed / excessHSpeedDecelRate;
+				calcSpeed = Mathf.Clamp(calcSpeed, walkSpeed, float.MaxValue); //下限設定
+				walkTime = 1.0f;
+			}
+			else if (calcSpeed < -walkSpeed)
+			{
+				calcSpeed += walkSpeed / excessHSpeedDecelRate;
+				calcSpeed = Mathf.Clamp(calcSpeed, float.MinValue, -walkSpeed);
+				walkTime = 1.0f;
 			}
 			else //直進(AnimationCurveにしたがって加速)
 			{
@@ -116,7 +139,7 @@ public class Player_Main : MonoBehaviour
 	Vector2 GetSpeed_Jump(bool jKey)
 	{
 		bool canTime = jumpLimitTime > jumpTime; //ジャンプが時間切れでないか
-		int additionalAirVSpeedDecelRate = 10;
+		const int additionalAirVSpeedDecelRate = 10;
 
 		float calcSpeed = beforeJumpSpeed;
 
@@ -139,12 +162,6 @@ public class Player_Main : MonoBehaviour
 		}
 		else if (isJump) //ジャンプ上昇中
 		{
-			///速度超過で緩やかに減速
-			///if
-			///else if (jkey---
-			///
-			///owari
-			
 			if (jKey && canTime && !isHead) //上昇続行　AnimationCurve適用
 			{
 				jumpTime += Time.deltaTime;
@@ -182,35 +199,45 @@ public class Player_Main : MonoBehaviour
 		return new Vector2(0, calcSpeed);
 	}
 
-	Vector2 GetSpeed_Swim(Vector2 sKey)
+	Vector2 GetSpeed_Swim(Vector2 sKey, bool isInWater)
 	{
 		Vector2 calcSpeed = beforeSpeed;
 
 		float sKeyH_sign = Mathf.Sign(sKey.x);
-		if (sKey.x != 0) transform.localScale = new Vector3(sKeyH_sign, 1, 1);
-
-		if (isWallFront) calcSpeed.x = 0f;
-		if (isGround || isHead) calcSpeed.y = 0f;
-
-		if (sKey != Vector2.zero)
+		if (isInWater)
 		{
-			calcSpeed += sKey * swimAcceleration;
-			calcSpeed.x = Mathf.Clamp(calcSpeed.x, -swimSpeed, swimSpeed);
-			calcSpeed.y = Mathf.Clamp(calcSpeed.y, -swimSpeed, swimSpeed);
+			isSwim = true;
+
+			if (sKey.x != 0) transform.localScale = new Vector3(sKeyH_sign, 1, 1);
+
+			if (isWallFront) calcSpeed.x = 0f;
+			if (isGround || isHead) calcSpeed.y = 0f;
+
+			if (sKey != Vector2.zero)
+			{
+				calcSpeed += sKey * swimAcceleration;
+				calcSpeed.x = Mathf.Clamp(calcSpeed.x, -swimSpeed, swimSpeed);
+				calcSpeed.y = Mathf.Clamp(calcSpeed.y, -swimSpeed, swimSpeed);
+			}
+			else
+			{
+				calcSpeed *= swimDeceleration;
+			}
+
+			beforeWalkSpeed = calcSpeed.x;
+			beforeJumpSpeed = calcSpeed.y;
+			return calcSpeed;
 		}
 		else
 		{
-			calcSpeed *= swimDeceleration;
+			isSwim = false;
+			return Vector2.zero;
 		}
-
-		beforeWalkSpeed = calcSpeed.x;
-		beforeJumpSpeed = calcSpeed.y;
-		return calcSpeed;
 	}
 
 	public void AddPlayerSpeed(Vector2 addSpeed)
 	{
-		additionalSpeed = addSpeed;
+		externalForceSpeed = addSpeed;
 
 	}
 
@@ -249,7 +276,7 @@ public class Player_Main : MonoBehaviour
 		//Move
 		if (isWater)
 		{
-			rb.linearVelocity = GetSpeed_Swim(swimKeyVector2);
+			rb.linearVelocity = GetSpeed_Swim(swimKeyVector2, isWater);
 		}
 		else
 		{
