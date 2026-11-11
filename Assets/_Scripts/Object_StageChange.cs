@@ -1,7 +1,9 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+//using UnityEngine.SceneManagement;
 
-public class Object_StageChange : MonoBehaviour
+using ProjectSOR;
+
+public class Object_StageChange : GameManagerBase
 {
 	[SerializeField] string playerTag = "Player";
 	[SerializeField] string nextSceneName;
@@ -10,7 +12,7 @@ public class Object_StageChange : MonoBehaviour
 	{
 		if (collision.CompareTag(playerTag))
 		{
-			SceneManager.LoadScene(nextSceneName);
+			SceneControl.MoveScene(nextSceneName);
 		}
 	}
 }
