@@ -297,7 +297,7 @@ public class Player_Main : MonoBehaviour
 		//Attack
 		if (attackKeyBool)
 		{
-			if (attackMode == 1) weapon.Attack(1);
+			//if (attackMode == 1) weapon.Attack(1);
 		}
 
 		beforeSpeed = rb.linearVelocity;
